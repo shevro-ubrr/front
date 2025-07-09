@@ -20,7 +20,7 @@ export default function TextSelectionPopup() {
                 const rect = range.getBoundingClientRect();
 
                 setPosition({
-                    top: rect.top + window.scrollY - 40,
+                    top: rect.top + window.scrollY,
                     left: rect.left + window.scrollX + rect.width / 2
                 });
 
