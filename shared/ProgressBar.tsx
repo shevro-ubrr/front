@@ -16,7 +16,7 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
                         <div
                             className={`flex items-center justify-center w-8 h-8 rounded-full ${
                                 index + 1 <= currentStep
-                                    ? "bg-blue-500 text-white"
+                                    ? "bg-[var(--main-red)] text-white"
                                     : "bg-gray-200 text-gray-600"
                             } font-semibold`}
                         >
@@ -26,7 +26,7 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
                         {index < steps - 1 && (
                             <div
                                 className={`flex-1 h-1 mx-2 ${
-                                    index + 1 < currentStep ? "bg-blue-500" : "bg-gray-200"
+                                    index + 1 < currentStep ? "bg-[var(--main-red)]" : "bg-gray-200"
                                 }`}
                             ></div>
                         )}
