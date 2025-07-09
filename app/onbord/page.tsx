@@ -23,11 +23,7 @@ const questions = [
     {
         question_text: "Знакомо ли Вам понятие «сложный процент»",
         variants: ["Не слышал(а)", "Слышал(а), но затрудняюсь объяснить", "Могу чётко объяснить и применяю на практике"]
-    },
-    {
-        question_text: "",
-        variants: []
-    },
+    }
 ] as IQuestion[];
 
 export default function OnboardingPage() {

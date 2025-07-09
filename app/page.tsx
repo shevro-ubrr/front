@@ -1,7 +1,5 @@
+import {redirect} from "next/navigation";
+
 export default function Home() {
-    return (
-        <main>
-            Главная страничка
-        </main>
-    );
+    return redirect("/onbord")
 }
