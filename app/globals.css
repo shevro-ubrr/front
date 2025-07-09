@@ -17,7 +17,7 @@
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, He  lvetica, sans-serif;
 }
 
 
@@ -41,7 +41,7 @@ body {
     gap: 10px;
 
     width: 300px;
-    height: 160px;
+    height: 140px;
 
     justify-content: space-between;
 }
