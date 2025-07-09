@@ -31,23 +31,27 @@ export default function TextSelectionPopup() {
         };
 
         const handleClickOutside = (e) => {
-            if (popupRef.current) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                if (!popupRef.current.contains(e.target)) {
+            const target = e instanceof TouchEvent ? e.touches[0]?.target : e.target;
+            if (popupRef.current && target) {
+                if (!popupRef.current.contains(target)) {
                     setShowPopup(false);
                 } else {
-                    handlePopupClick(e)
+                    handlePopupClick(e);
                 }
             }
         };
 
         document.addEventListener('mouseup', handleSelection);
         document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchend', handleSelection);
+        document.addEventListener('touchstart', handleClickOutside);
+
 
         return () => {
             document.removeEventListener('mouseup', handleSelection);
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchend', handleSelection);
+            document.removeEventListener('touchstart', handleClickOutside);
         };
     }, []);
 
