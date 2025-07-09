@@ -5,7 +5,7 @@ type ProgressBarProps = {
     currentStep: number; // Текущий шаг (начинается с 1)
 };
 
-const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
+const ProgressBar = ({ steps, currentStep,  }: ProgressBarProps) => {
     return (
         <div className="w-full">
             {/* Обертка прогресс-бара */}

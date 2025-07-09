@@ -1,394 +1,529 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import { redirect, RedirectType } from "next/navigation";
 import Header from "@/shared/header";
-import ProgressBar from "@/shared/ProgressBar";
 
-type IQuestion = { question_text: string; variants: string[] };
 
-const questions: IQuestion[] = [
-    {
-        question_text: "Как часто Вы планируете свой бюджет?",
-        variants: [
-            "Никогда",
-            "Редко — иногда составляю план",
-            "Регулярно — ежемесячно или чаще",
-        ],
-    },
-    {
-        question_text: "Какие финансовые инструменты Вы используете?",
-        variants: [
-            "Только наличные",
-            "Банковские карты и счета",
-            "Инвестиционные счета, депозиты, акции",
-        ],
-    },
-    {
-        question_text: "Что для Вас важнее при выборе инвестиций?",
-        variants: [
-            "Максимальная доходность",
-            "Низкий риск",
-            "Долгосрочная стабильность",
-            "Социальная или экологическая ответственность",
-        ],
-    },
-    {
-        question_text: "Готовы ли Вы повышать финансовую грамотность?",
-        variants: [
-            "Нет, меня устраивает мой уровень",
-            "Да, иногда читаю статьи и смотрю видео",
-            "Активно обучаюсь и применяю знания на практике",
-        ],
-    },
-];
-
-export default function EarlyRetirementGuide() {
-    const [question, setQuestion] = useState<IQuestion>();
-    const [step, setStep] = useState(0);
-    const [questionResult, setQuestionResult] = useState<string[]>([]);
-    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-
-    const addQuestionResult = (answer: string) => {
-        setQuestionResult((before) => [...before, answer]);
-        setSelectedAnswer(null);
-        if (step + 1 === questions.length) {
-            onSubmit();
-            return;
-        }
-        setStep((step) => step + 1);
-    };
-
-    const goToPreviousQuestion = () => {
-        if (step > 0) {
-            setStep((step) => step - 1);
-            setSelectedAnswer(questionResult[step - 1]);
-            setQuestionResult((before) => before.slice(0, -1));
-        }
-    };
-
-    const onSubmit = () => {
-        fetch("https://guidesai.ru/finance-test", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(questionResult),
-        });
-        redirect("/tests", RedirectType.replace);
-    };
-
-    useEffect(() => {
-        setQuestion(questions[step]);
-        if (step < questionResult.length) {
-            setSelectedAnswer(questionResult[step]);
-        } else {
-            setSelectedAnswer(null);
-        }
-    }, [step]);
-
-    useEffect(() => {
-        fetch("https://guidesai.ru/set-cookie", {
-            method: "GET",
-            credentials: "include",
-        });
-    }, []);
-
-    if (!question) {
-        return <>Загрузка...</>;
-    }
+export default function BudgetGuide() {
 
     return (
         <main className="flex flex-col items-center w-full h-full bg-gray-50">
             <Header/>
 
-            {/* УБРИР стиль - синий заголовок с логотипом */}
-            <div className="w-full bg-ubrir-red py-6 mb-8">
+            {/* Красный заголовок с логотипом */}
+            <div className="w-full bg-[var(--main-red)] py-6 mb-8">
                 <div className="container mx-auto px-4">
-                    <div className="flex items-center">
-                        <h1 className="text-3xl font-bold text-[var(--ubrir-red)]">
-                            Финансовая свобода: выход на пенсию в 35 лет
+                    <div className="flex items-center justify-center">
+                        <h1 className="text-3xl font-bold text-white text-center">
+                            💰 Деньги не игрушка (или все-таки игрушка?)
                         </h1>
                     </div>
+                    <p className="text-white text-center italic mt-2">
+                        Гид по личному и семейному бюджету для тех, кто уже почти взрослый
+                    </p>
                 </div>
             </div>
 
             <div className="container mx-auto px-4 max-w-4xl">
+
+                {/* Предупреждение */}
+                <div className="bg-ubrir-light-red border-l-4 border-ubrir-red p-4 mb-8 rounded-r">
+                    <p className="font-medium">
+                        <span className="text-ubrir-red">Внимание!</span> Эта статья не про то, как стать миллионером к
+                        18 годам.
+                        Это про то, как не остаться без денег на пиццу в середине месяца 🍕
+                    </p>
+                </div>
+
                 {/* Введение */}
-                <section className="bg-white rounded-lg shadow-md p-6 mb-8 border-l-4 border-ubrir-red">
+                <section id="intro" className="bg-white rounded-lg shadow-md p-6 mb-8 border-l-4 border-ubrir-red">
                     <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
-                        Финансовая независимость — это реально
+                        🎯 Зачем вообще нужен бюджет?
                     </h2>
                     <p className="text-gray-700 mb-4">
-                        Движение FIRE (Financial Independence, Retire Early) набирает популярность среди клиентов УБРИР.
-                        Наши эксперты подготовили детальный план, как достичь финансовой свободы к 35 годам.
+                        Представьте: вы получили карманные деньги или зарплату с подработки.
+                        Через неделю в кошельке пустота, а до следующего финансирования еще две недели.
+                        Знакомо? Именно для этого и нужен бюджет!
                     </p>
-                    <div className="bg-ubrir-light-red p-4 rounded">
+                    <p className="mb-4">
+                        <strong>Бюджет</strong> — это не скучная таблица с цифрами.
+                        Это ваш финансовый GPS, который поможет добраться до цели, не заблудившись в море импульсивных
+                        покупок.
+                    </p>
+
+                    <div className="bg-ubrir-light-red p-4 rounded mt-4">
                         <p className="font-medium">
-                             <span className="text-ubrir-red">Экспертное мнение:</span> При грамотном инвестировании
-                            и финансовой дисциплине выход на пенсию в 35 лет возможен при доходе от 100 000 ₽/мес.
+                            <span className="text-ubrir-red">Фишка:</span> Люди, которые ведут бюджет, в среднем
+                            откладывают на 15-20% больше денег,
+                            чем те, кто этого не делает. Это не магия — это планирование!
                         </p>
                     </div>
                 </section>
 
-                {/* Теория */}
-                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
-                        Основы финансовой независимости
+                {/* Личный бюджет */}
+                <section id="personal" className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4 border-b-2 border-ubrir-red pb-3">
+                        👤 Личный бюджет: твои деньги — твои правила
                     </h2>
 
                     <div className="grid md:grid-cols-2 gap-6">
-                        {/* Карточка 1 */}
+                        {/* Доходы */}
                         <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                             <h3 className="text-xl font-medium text-ubrir-red mb-2">
-                                <span className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">1</span>
-                                Сила сложных процентов
+                                <span
+                                    className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">1</span>
+                                Откуда берутся деньги?
                             </h3>
-                            <p className="text-gray-700 mb-3">
-                                Инвестируя 50 000 ₽ ежемесячно под 10% годовых, через 15 лет вы получите:
-                            </p>
-                            <div className="bg-ubrir-light-red p-3 rounded text-center font-bold text-ubrir-red">
-                                ≈ 20 000 000 ₽
-                            </div>
+                            <ul className="list-disc pl-6 mt-3 space-y-2">
+                                <li><strong>Карманные деньги</strong> от родителей</li>
+                                <li><strong>Подработка</strong> (курьер, репетиторство, фриланс)</li>
+                                <li><strong>Подарки</strong> на день рождения и праздники</li>
+                                <li><strong>Стипендия</strong> (если учитесь в колледже)</li>
+                                <li><strong>Продажа ненужных вещей</strong></li>
+                            </ul>
                         </div>
 
-                        {/* Карточка 2 */}
+                        {/* Расходы */}
                         <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                             <h3 className="text-xl font-medium text-ubrir-red mb-2">
-                                <span className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">2</span>
-                                Правило 4%
+                                <span
+                                    className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">2</span>
+                                Куда деньги исчезают?
                             </h3>
-                            <p className="text-gray-700 mb-3">
-                                Снимая 4% от капитала ежегодно, вы не исчерпаете средства за 30+ лет.
+
+                            <div className="overflow-x-auto mt-3">
+                                <table className="min-w-full border-collapse border border-gray-300">
+                                    <thead>
+                                    <tr className="bg-gray-100">
+                                        <th className="border border-gray-300 p-2 text-left">Категория</th>
+                                        <th className="border border-gray-300 p-2 text-left">Примеры</th>
+                                        <th className="border border-gray-300 p-2 text-left">Приоритет</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2"><strong>Обязательные</strong></td>
+                                        <td className="border border-gray-300 p-2">Проезд, обеды, школьные
+                                            принадлежности
+                                        </td>
+                                        <td className="border border-gray-300 p-2">🔥 Высокий</td>
+                                    </tr>
+                                    <tr className="bg-gray-50">
+                                        <td className="border border-gray-300 p-2"><strong>Важные</strong></td>
+                                        <td className="border border-gray-300 p-2">Одежда, книги, курсы</td>
+                                        <td className="border border-gray-300 p-2">⚡ Средний</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2"><strong>Желательные</strong></td>
+                                        <td className="border border-gray-300 p-2">Кино, кафе, игры</td>
+                                        <td className="border border-gray-300 p-2">⭐ Низкий</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Правило 50/30/20 */}
+                    <div className="mt-8">
+                        <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                            <span
+                                className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">3</span>
+                            Правило 50/30/20 для подростков
+                        </h3>
+                        <p className="mb-4">Классическая формула распределения денег:</p>
+
+                        <div className="bg-gray-100 p-4 rounded-lg mb-4 font-mono">
+                            <p>📊 50% — на необходимое (еда, транспорт, учеба)</p>
+                            <p>🎮 30% — на развлечения и хобби</p>
+                            <p>💎 20% — на накопления и цели</p>
+                        </div>
+
+                        <div className="bg-ubrir-light-red p-4 rounded">
+                            <p className="font-medium">
+                                <span className="text-ubrir-red">Пример:</span> Если у вас есть 10,000 рублей в месяц,
+                                то:
                             </p>
-                            <div className="bg-ubrir-light-red p-3 rounded text-center font-bold text-ubrir-red">
-                                25 000 000 ₽ → 100 000 ₽/мес
-                            </div>
+                            <ul className="list-disc pl-6 mt-2">
+                                <li>5,000 руб. — на обязательные расходы</li>
+                                <li>3,000 руб. — на развлечения</li>
+                                <li>2,000 руб. — откладываем на мечту</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Финансовая цель */}
+                    <div className="mt-8">
+                        <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                            <span
+                                className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">4</span>
+                            Как поставить финансовую цель?
+                        </h3>
+                        <p className="mb-4">Цель должна быть <strong>SMART</strong>:</p>
+                        <ul className="list-disc pl-6 mb-6 space-y-2">
+                            <li><strong>S</strong>pecific (конкретная) — не хочу денег, а хочу новый iPhone</li>
+                            <li><strong>M</strong>easurable (измеримая) — точная сумма, например 80,000 рублей</li>
+                            <li><strong>A</strong>chievable (достижимая) — реально ли накопить эту сумму?</li>
+                            <li><strong>R</strong>elevant (важная) — действительно ли вам это нужно?</li>
+                            <li><strong>T</strong>ime-bound (ограниченная по времени) — к какой дате?</li>
+                        </ul>
+
+                        <div className="bg-ubrir-light-red p-4 rounded">
+                            <p className="font-medium">
+                                <span className="text-ubrir-red">Лайфхак:</span> Разделите большую цель на маленькие
+                                этапы.
+                                Хотите накопить 60,000 на ноутбук за год? Это всего 5,000 в месяц или 167 рублей в день!
+                            </p>
                         </div>
                     </div>
                 </section>
 
-                {/* Практика */}
-                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
-                        План действий от УБРИР
+                {/* Семейный бюджет */}
+                <section id="family" className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4 border-b-2 border-ubrir-red pb-3">
+                        🏠 Семейный бюджет: командная работа
                     </h2>
 
-                    <div className="space-y-4">
-                        <div className="flex items-start">
-                            <div className="bg-ubrir-red text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3 mt-1">
-                                1
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-medium text-gray-800">Определите цель</h3>
-                                <p className="text-gray-700">
-                                    Рассчитайте ежемесячные расходы и умножьте на 300 (25 лет × 12 месяцев).
-                                </p>
-                                <div className="mt-2 p-3 bg-gray-100 rounded">
-                                    <p className="font-medium text-ubrir-red">Пример расчета:</p>
-                                    <p>50 000 ₽/мес × 300 = 15 000 000 ₽</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start">
-                            <div className="bg-ubrir-red text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3 mt-1">
-                                2
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-medium text-gray-800">Оптимизируйте бюджет</h3>
-                                <p className="text-gray-700">
-                                    Используйте мобильное приложение УБРИР для анализа расходов.
-                                </p>
-                                <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
-                                    <li>Сократите ненужные подписки</li>
-                                    <li>Рефинансируйте кредиты</li>
-                                    <li>Используйте кэшбэк до 10%</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start">
-                            <div className="bg-ubrir-red text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3 mt-1">
-                                3
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-medium text-gray-800">Инвестируйте регулярно</h3>
-                                <p className="text-gray-700">
-                                    Открывайте ИИС в УБРИР и получайте налоговый вычет 13%.
-                                </p>
-                                <div className="mt-2 grid grid-cols-2 gap-2">
-                                    <div className="border p-2 rounded text-center">
-                                        <div className="font-medium text-ubrir-red">ETF</div>
-                                        <div className="text-sm">Доходность 8-12%</div>
-                                    </div>
-                                    <div className="border p-2 rounded text-center">
-                                        <div className="font-medium text-ubrir-red">Облигации</div>
-                                        <div className="text-sm">Доходность 6-9%</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Калькулятор */}
-                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
-                        Калькулятор финансовой свободы
-                    </h2>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Ежемесячные расходы (₽)</label>
-                                <input
-                                    type="number"
-                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-ubrir-red focus:border-transparent"
-                                    placeholder="50 000"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Ежемесячные инвестиции (₽)</label>
-                                <input
-                                    type="number"
-                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-ubrir-red focus:border-transparent"
-                                    placeholder="30 000"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Ожидаемая доходность (% годовых)</label>
-                                <input
-                                    type="number"
-                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-ubrir-red focus:border-transparent"
-                                    placeholder="10"
-                                />
-                            </div>
-                        </div>
-                        <div className="bg-ubrir-light-red p-4 rounded flex flex-col justify-center">
-                            <h3 className="text-lg font-medium text-ubrir-red mb-2 text-center">
-                                Ваш план достижения FIRE
-                            </h3>
-                            <div className="text-center mb-4">
-                                <div className="text-3xl font-bold text-ubrir-red">12 лет</div>
-                                <div className="text-gray-600">до финансовой свободы</div>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between">
-                                    <span>Необходимый капитал:</span>
-                                    <span className="font-medium">15 000 000 ₽</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Накопите за год:</span>
-                                    <span className="font-medium">420 000 ₽</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>С учетом сложного %:</span>
-                                    <span className="font-medium">≈ 9 800 000 ₽</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button className="w-full mt-4 bg-ubrir-red hover:bg-ubrir-dark-red text-white py-3 px-4 rounded font-medium transition-colors">
-                        Получить персональный план от эксперта УБРИР
-                    </button>
-                </section>
-
-                {/* Тест */}
-                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
-                        Проверьте свою готовность к FIRE
-                    </h2>
-
-                    <div className="px-8 w-full mb-6">
-                        <ProgressBar steps={questions.length} currentStep={step}/>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-6">
-                        <div className="text-center font-bold text-xl text-gray-800">
-                            {question.question_text}
-                        </div>
-
-                        <div className="flex flex-col gap-3 w-full max-w-md">
-                            {question.variants.map((variant) => (
-                                <label
-                                    key={variant}
-                                    className="flex items-center gap-3 p-3 hover:bg-ubrir-light-red rounded-lg cursor-pointer border border-gray-200 has-[:checked]:border-ubrir-red has-[:checked]:bg-ubrir-light-red transition-colors"
-                                >
-                                    <input
-                                        type="radio"
-                                        name="question"
-                                        value={variant}
-                                        checked={selectedAnswer === variant}
-                                        onChange={() => setSelectedAnswer(variant)}
-                                        className="h-5 w-5 text-ubrir-red focus:ring-ubrir-red"
-                                    />
-                                    <span className="flex-1">{variant}</span>
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="flex gap-4 items-center mt-4">
-                            {step > 0 && (
-                                <button
-                                    onClick={goToPreviousQuestion}
-                                    className="p-2 text-gray-600 hover:text-ubrir-red rounded-full hover:bg-gray-100"
-                                    aria-label="Назад"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-6 w-6"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
-                                    </svg>
-                                </button>
-                            )}
-                            <button
-                                className={`px-6 py-3 rounded-lg font-medium ${
-                                    selectedAnswer
-                                        ? "bg-ubrir-red hover:bg-ubrir-dark-red text-white"
-                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                } transition-colors`}
-                                disabled={!selectedAnswer}
-                                onClick={() => selectedAnswer && addQuestionResult(selectedAnswer)}
-                            >
-                                {step + 1 === questions.length ? "Получить результат" : "Следующий вопрос"}
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Контакты */}
-                <section className="bg-ubrir-red rounded-lg shadow-md p-6 text-white">
-                    <h2 className="text-2xl font-semibold mb-4">
-                        Персональное сопровождение от УБРИР
-                    </h2>
                     <p className="mb-4">
-                        Наши финансовые советники помогут составить индивидуальный план достижения
-                        финансовой свободы с учетом ваших возможностей и целей.
+                        Семейный бюджет — это как футбольная команда. Каждый играет свою роль,
+                        но цель общая — победа (в данном случае, финансовое благополучие).
                     </p>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <h3 className="font-medium mb-2">Контакты</h3>
-                            <p>Телефон: <a href="tel:+78002001234" className="underline">8 800 200-12-34</a></p>
-                            <p>Email: <a href="mailto:fire@ubrir.ru" className="underline">fire@ubrir.ru</a></p>
+
+                    <div className="mt-6">
+                        <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                            <span
+                                className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">1</span>
+                            Виды семейного бюджета
+                        </h3>
+
+                        <div className="overflow-x-auto mb-8">
+                            <table className="min-w-full border-collapse border border-gray-300">
+                                <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="border border-gray-300 p-2 text-left">Тип</th>
+                                    <th className="border border-gray-300 p-2 text-left">Как работает</th>
+                                    <th className="border border-gray-300 p-2 text-left">Плюсы</th>
+                                    <th className="border border-gray-300 p-2 text-left">Минусы</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td className="border border-gray-300 p-2"><strong>Совместный</strong></td>
+                                    <td className="border border-gray-300 p-2">Все деньги в общий котел</td>
+                                    <td className="border border-gray-300 p-2">Прозрачность, взаимопомощь</td>
+                                    <td className="border border-gray-300 p-2">Нужно согласовывать траты</td>
+                                </tr>
+                                <tr className="bg-gray-50">
+                                    <td className="border border-gray-300 p-2"><strong>Раздельный</strong></td>
+                                    <td className="border border-gray-300 p-2">Каждый тратит свои деньги</td>
+                                    <td className="border border-gray-300 p-2">Финансовая независимость</td>
+                                    <td className="border border-gray-300 p-2">Сложно планировать общие цели</td>
+                                </tr>
+                                <tr>
+                                    <td className="border border-gray-300 p-2"><strong>Смешанный</strong></td>
+                                    <td className="border border-gray-300 p-2">Общие расходы + личные деньги</td>
+                                    <td className="border border-gray-300 p-2">Баланс свободы и ответственности</td>
+                                    <td className="border border-gray-300 p-2">Нужно договариваться о правилах</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6 mt-8">
                         <div>
-                            <h3 className="font-medium mb-2">Офисы</h3>
-                            <p>Более 200 отделений по всей России</p>
-                            <button className="mt-2 bg-white text-ubrir-red px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
-                                Найти ближайший офис
-                            </button>
+                            <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                                <span
+                                    className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">2</span>
+                                Как подростку участвовать?
+                            </h3>
+                            <ol className="list-decimal pl-6 space-y-2">
+                                <li><strong>Изучите семейные доходы и расходы</strong></li>
+                                <li><strong>Предложите свою помощь</strong></li>
+                                <li><strong>Берите ответственность</strong></li>
+                                <li><strong>Учитесь на примере</strong></li>
+                            </ol>
+
+                            <div className="bg-ubrir-light-red p-4 rounded mt-4">
+                                <p className="font-medium">
+                                    <span className="text-ubrir-red">Важно!</span> Не стоит вмешиваться в серьезные
+                                    финансовые решения семьи без приглашения.
+                                    Ваша задача — учиться, а не указывать взрослым, что делать.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                                <span
+                                    className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">3</span>
+                                Семейные финансовые цели
+                            </h3>
+                            <ul className="list-disc pl-6 space-y-2">
+                                <li>Отпуск на море летом</li>
+                                <li>Ремонт в квартире</li>
+                                <li>Покупка автомобиля</li>
+                                <li>Финансовая подушка безопасности</li>
+                                <li>Накопления на ваше образование</li>
+                            </ul>
                         </div>
                     </div>
                 </section>
+
+                {/* Приложения */}
+                <section id="apps" className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4 border-b-2 border-ubrir-red pb-3">
+                        📱 Приложения и инструменты
+                    </h2>
+
+                    <p className="mb-4">
+                        В 2025 году вести бюджет в блокноте — это как писать SMS на кнопочном телефоне.
+                        Можно, но зачем?
+                    </p>
+
+                    <div className="mt-6">
+                        <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                            <span
+                                className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">1</span>
+                            Топ-5 приложений для учета финансов
+                        </h3>
+
+                        <div className="overflow-x-auto mb-8">
+                            <table className="min-w-full border-collapse border border-gray-300">
+                                <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="border border-gray-300 p-2 text-left">Приложение</th>
+                                    <th className="border border-gray-300 p-2 text-left">Особенности</th>
+                                    <th className="border border-gray-300 p-2 text-left">Цена</th>
+                                    <th className="border border-gray-300 p-2 text-left">Для кого</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td className="border border-gray-300 p-2"><strong>Дзен-мани</strong></td>
+                                    <td className="border border-gray-300 p-2">Автоматическая синхронизация с банками
+                                    </td>
+                                    <td className="border border-gray-300 p-2">Бесплатно</td>
+                                    <td className="border border-gray-300 p-2">Ленивые гении</td>
+                                </tr>
+                                <tr className="bg-gray-50">
+                                    <td className="border border-gray-300 p-2"><strong>CoinKeeper</strong></td>
+                                    <td className="border border-gray-300 p-2">Красивый интерфейс, звуки монет</td>
+                                    <td className="border border-gray-300 p-2">1,299₽ навсегда</td>
+                                    <td className="border border-gray-300 p-2">Любители эстетики</td>
+                                </tr>
+                                <tr>
+                                    <td className="border border-gray-300 p-2"><strong>Monefy</strong></td>
+                                    <td className="border border-gray-300 p-2">Простота использования</td>
+                                    <td className="border border-gray-300 p-2">499₽/год</td>
+                                    <td className="border border-gray-300 p-2">Минималисты</td>
+                                </tr>
+                                <tr className="bg-gray-50">
+                                    <td className="border border-gray-300 p-2"><strong>Money Flow</strong></td>
+                                    <td className="border border-gray-300 p-2">Продвинутая аналитика</td>
+                                    <td className="border border-gray-300 p-2">299₽/месяц</td>
+                                    <td className="border border-gray-300 p-2">Аналитики</td>
+                                </tr>
+                                <tr>
+                                    <td className="border border-gray-300 p-2"><strong>Excel/Google Sheets</strong></td>
+                                    <td className="border border-gray-300 p-2">Полная настройка под себя</td>
+                                    <td className="border border-gray-300 p-2">Бесплатно</td>
+                                    <td className="border border-gray-300 p-2">Любители покопаться</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                            <span
+                                className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">2</span>
+                            Базовая структура таблицы бюджета
+                        </h3>
+                        <p className="mb-4">Если решили использовать Excel или Google Sheets, вот минимальная
+                            структура:</p>
+
+                        <div className="bg-gray-100 p-4 rounded-lg mb-4 font-mono">
+                            <p>📅 Дата | 💰 Сумма | 📂 Категория | 📝 Комментарий</p>
+                            <p>01.03 | -500 | Транспорт | Проездной</p>
+                            <p>02.03 | -200 | Еда | Обед в школе</p>
+                            <p>03.03 | +5000 | Доход | Карманные деньги</p>
+                            <p>04.03 | -1500 | Развлечения | Кино с друзьями</p>
+                        </div>
+
+                        <div className="bg-ubrir-light-red p-4 rounded">
+                            <p className="font-medium">
+                                <span className="text-ubrir-red">Совет:</span> Начните с простого! Не пытайтесь сразу
+                                создать сложную систему с 50 категориями.
+                                Достаточно 5-7 основных категорий.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Лайфхаки */}
+                <section id="tips" className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4 border-b-2 border-ubrir-red pb-3">
+                        🎯 Лайфхаки и секреты экономии
+                    </h2>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                                <span
+                                    className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">1</span>
+                                Правило 24 часов
+                            </h3>
+                            <p className="mb-6">
+                                Хотите что-то купить? Подождите сутки. Если желание не прошло — покупайте.
+                                Это спасет вас от импульсивных трат.
+                            </p>
+
+                            <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                                <span
+                                    className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">2</span>
+                                Метод конвертов (цифровая версия)
+                            </h3>
+                            <p className="mb-4">Создайте виртуальные конверты для разных целей:</p>
+                            <ul className="list-disc pl-6 mb-6 space-y-2">
+                                <li>🍕 Красный конверт — еда и развлечения</li>
+                                <li>🎮 Синий конверт — хобби и игры</li>
+                                <li>👕 Зеленый конверт — одежда</li>
+                                <li>💎 Золотой конверт — накопления на мечту</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                                <span
+                                    className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">3</span>
+                                Экономия для школьников
+                            </h3>
+
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full border-collapse border border-gray-300">
+                                    <thead>
+                                    <tr className="bg-gray-100">
+                                        <th className="border border-gray-300 p-2 text-left">Категория</th>
+                                        <th className="border border-gray-300 p-2 text-left">Как сэкономить</th>
+                                        <th className="border border-gray-300 p-2 text-left">Экономия</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2"><strong>Школьные
+                                            принадлежности</strong></td>
+                                        <td className="border border-gray-300 p-2">Покупать оптом, использовать
+                                            прошлогодние
+                                        </td>
+                                        <td className="border border-gray-300 p-2">30-50%</td>
+                                    </tr>
+                                    <tr className="bg-gray-50">
+                                        <td className="border border-gray-300 p-2"><strong>Обеды</strong></td>
+                                        <td className="border border-gray-300 p-2">Готовить дома, брать с собой</td>
+                                        <td className="border border-gray-300 p-2">50-70%</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2"><strong>Развлечения</strong></td>
+                                        <td className="border border-gray-300 p-2">Студенческие скидки, акции</td>
+                                        <td className="border border-gray-300 p-2">20-40%</td>
+                                    </tr>
+                                    <tr className="bg-gray-50">
+                                        <td className="border border-gray-300 p-2"><strong>Одежда</strong></td>
+                                        <td className="border border-gray-300 p-2">Распродажи, секонд-хенды</td>
+                                        <td className="border border-gray-300 p-2">40-80%</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2"><strong>Транспорт</strong></td>
+                                        <td className="border border-gray-300 p-2">Льготный проездной, велосипед</td>
+                                        <td className="border border-gray-300 p-2">30-60%</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8">
+                        <div className="bg-ubrir-light-red p-4 rounded mb-6">
+                            <p className="font-medium">
+                                <span className="text-ubrir-red">Суперсовет:</span> Ведите дневник трат хотя бы
+                                неделю. Записывайте ВСЕ расходы,
+                                даже на жвачку. Будете удивлены, куда уходят деньги!
+                            </p>
+                        </div>
+
+                        <h3 className="text-xl font-medium text-ubrir-red mb-3">
+                            <span
+                                className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">4</span>
+                            Как увеличить доходы?
+                        </h3>
+                        <p className="mb-4">Легальные способы заработка для старшеклассников:</p>
+                        <ul className="list-disc pl-6 mb-6 space-y-2">
+                            <li><strong>Репетиторство</strong> младших школьников</li>
+                            <li><strong>Фриланс</strong> (дизайн, тексты, переводы)</li>
+                            <li><strong>Курьерская работа</strong> (с 16 лет)</li>
+                            <li><strong>Помощь соседям</strong> (выгул собак, уборка)</li>
+                            <li><strong>Продажа самодельных товаров</strong> (украшения, сладости)</li>
+                        </ul>
+
+                        <div className="bg-ubrir-light-red p-4 rounded">
+                            <p className="font-medium">
+                                <span className="text-ubrir-red">Внимание!</span> Работа не должна мешать учебе.
+                                Ваша главная задача — получить образование, а заработок — приятный бонус.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Заключение */}
+                <section id="conclusion" className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4 border-b-2 border-ubrir-red pb-3">
+                        🎓 Заключение: деньги — это инструмент, а не цель
+                    </h2>
+
+                    <p className="mb-6">
+                        Поздравляю! Теперь вы знаете больше о финансах, чем многие взрослые.
+                        Но помните: деньги — это не самоцель, а инструмент для достижения ваших мечт и целей.
+                    </p>
+
+                    <div className="bg-ubrir-light-red p-4 rounded mb-6">
+                        <p className="font-medium"><span className="text-ubrir-red">Главные выводы:</span></p>
+                        <ul className="list-disc pl-6 mt-2">
+                            <li>Бюджет — это не ограничение, а свобода выбора</li>
+                            <li>Правило 50/30/20 работает в любом возрасте</li>
+                            <li>Лучше начать с простого, чем не начать вообще</li>
+                            <li>Экономия — это навык, который развивается с практикой</li>
+                            <li>Семейный бюджет — это командная работа</li>
+                        </ul>
+                    </div>
+
+                    <p className="mb-6">
+                        Начните прямо сейчас! Скачайте приложение, создайте таблицу или просто запишите свои доходы и
+                        расходы за последнюю неделю.
+                        Первый шаг — самый важный.
+                    </p>
+
+                    <div className="bg-ubrir-light-red p-4 rounded">
+                        <p className="font-medium">
+                            <span className="text-ubrir-red">Помните:</span> Финансовая грамотность — это не про то, как
+                            стать богатым.
+                            Это про то, как не быть бедным и иметь возможность делать то, что вам действительно важно.
+                        </p>
+                    </div>
+
+                    <p className="mt-6 mb-4 text-center">
+                        Удачи вам в мире финансов! Пусть ваши доходы растут быстрее расходов, а мечты сбываются точно в
+                        срок 💪
+                    </p>
+                </section>
+
+                <footer className="text-center text-gray-600 text-sm mt-8 pb-8">
+                    <p>Эта статья создана для образовательных целей. Помните: лучший советчик по финансам — это ваш
+                        собственный опыт и здравый смысл.</p>
+                    <p className="mt-2 italic">Берегите деньги и они будут беречь вас! 💰</p>
+                </footer>
             </div>
         </main>
     );
 }
-
-

@@ -1,346 +1,394 @@
-"use client";
-import { useState } from "react";
-import Header from "@/shared/header";
-import TextSelectionPopup from "@/shared/TextSelectionPopup";
+'use client'
 
-const questions = [
-        {
-                question: "Что такое личный бюджет?",
-                options: [
-                        "A. Список всех крупных покупок",
-                        "B. Сумма зарплаты без учёта трат",
-                        "C. Соотношение всех доходов и расходов человека",
-                        "D. Бюджет, который утверждает государство"
-                ],
-                correct: 2,
-        },
-        {
-                question: "Какой из этих расходов считается обязательным?",
-                options: [
-                        "A. Новый смартфон",
-                        "B. Коммунальные платежи",
-                        "C. Билеты в кино",
-                        "D. Поход в кафе"
-                ],
-                correct: 1,
-        },
-        {
-                question: "Какой бюджет считается положительным?",
-                options: [
-                        "A. Доходов меньше, чем расходов",
-                        "B. Доходов и расходов одинаково",
-                        "C. Доходов больше, чем расходов",
-                        "D. Бюджет вообще не ведётся"
-                ],
-                correct: 2,
-        },
-        {
-                question: "Какой способ планирования бюджета предполагает деление на 50%, 30% и 20%?",
-                options: [
-                        "A. Метод «нулевого баланса»",
-                        "B. Метод «финансовой подушки»",
-                        "C. Метод «конвертов»",
-                        "D. Метод 50/30/20"
-                ],
-                correct: 3,
-        },
-        {
-                question: "Что такое резервный фонд?",
-                options: [
-                        "A. Деньги, которые выдали родители",
-                        "B. Средства на развлечения",
-                        "C. Деньги, отложенные на случай непредвиденных ситуаций",
-                        "D. Золотой запас страны"
-                ],
-                correct: 2,
-        },
-        {
-                question: "Какой подход НЕ относится к ведению семейного бюджета?",
-                options: [
-                        "A. Совместный",
-                        "B. Раздельный",
-                        "C. Индивидуальный налоговый",
-                        "D. Смешанный"
-                ],
-                correct: 2,
-        },
-        {
-                question: "Какая из привычек поможет улучшить контроль над бюджетом?",
-                options: [
-                        "A. Не думать о мелких тратах",
-                        "B. Записывать расходы и доходы",
-                        "C. Всегда брать кредит на покупки",
-                        "D. Покупать вещи только по акции"
-                ],
-                correct: 1,
-        }
+import { useEffect, useState } from "react";
+import { redirect, RedirectType } from "next/navigation";
+import Header from "@/shared/header";
+import ProgressBar from "@/shared/ProgressBar";
+
+type IQuestion = { question_text: string; variants: string[] };
+
+const questions: IQuestion[] = [
+    {
+        question_text: "Как часто Вы планируете свой бюджет?",
+        variants: [
+            "Никогда",
+            "Редко — иногда составляю план",
+            "Регулярно — ежемесячно или чаще",
+        ],
+    },
+    {
+        question_text: "Какие финансовые инструменты Вы используете?",
+        variants: [
+            "Только наличные",
+            "Банковские карты и счета",
+            "Инвестиционные счета, депозиты, акции",
+        ],
+    },
+    {
+        question_text: "Что для Вас важнее при выборе инвестиций?",
+        variants: [
+            "Максимальная доходность",
+            "Низкий риск",
+            "Долгосрочная стабильность",
+            "Социальная или экологическая ответственность",
+        ],
+    },
+    {
+        question_text: "Готовы ли Вы повышать финансовую грамотность?",
+        variants: [
+            "Нет, меня устраивает мой уровень",
+            "Да, иногда читаю статьи и смотрю видео",
+            "Активно обучаюсь и применяю знания на практике",
+        ],
+    },
 ];
 
-export default function Page() {
-        const [answers, setAnswers] = useState(Array(questions.length).fill(null));
-        const [submitted, setSubmitted] = useState(false);
+export default function EarlyRetirementGuide() {
+    const [question, setQuestion] = useState<IQuestion>();
+    const [step, setStep] = useState(0);
+    const [questionResult, setQuestionResult] = useState<string[]>([]);
+    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
-        const handleChange = (qIndex: number, oIndex: number) => {
-                const newAnswers = [...answers];
-                newAnswers[qIndex] = oIndex;
-                setAnswers(newAnswers);
-        };
+    const addQuestionResult = (answer: string) => {
+        setQuestionResult((before) => [...before, answer]);
+        setSelectedAnswer(null);
+        if (step + 1 === questions.length) {
+            onSubmit();
+            return;
+        }
+        setStep((step) => step + 1);
+    };
 
-        const handleSubmit = () => {
-                setSubmitted(true);
-        };
+    const goToPreviousQuestion = () => {
+        if (step > 0) {
+            setStep((step) => step - 1);
+            setSelectedAnswer(questionResult[step - 1]);
+            setQuestionResult((before) => before.slice(0, -1));
+        }
+    };
 
-        const score = answers.reduce((acc, a, i) => (a === questions[i].correct ? acc + 1 : acc), 0);
+    const onSubmit = () => {
+        fetch("https://guidesai.ru/finance-test", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(questionResult),
+        });
+        redirect("/tests", RedirectType.replace);
+    };
 
-        return (
-            <main className="page-container">
-                    <TextSelectionPopup/>
-                    <Header />
+    useEffect(() => {
+        setQuestion(questions[step]);
+        if (step < questionResult.length) {
+            setSelectedAnswer(questionResult[step]);
+        } else {
+            setSelectedAnswer(null);
+        }
+    }, [step]);
 
-                    <article className="longread">
-                            <h3>📖 Лонгрид: Личный и семейный бюджет</h3>
+    useEffect(() => {
+        fetch("https://guidesai.ru/set-cookie", {
+            method: "GET",
+            credentials: "include",
+        });
+    }, []);
 
-                            <p><strong>🔹 Что такое личный и семейный бюджет</strong></p>
-                            <p>
-                                    Финансовая грамотность начинается с умения управлять своими деньгами. А основа этого — бюджет: план доходов
-                                    и расходов на определённый период, чаще всего на месяц.
+    if (!question) {
+        return <>Загрузка...</>;
+    }
+
+    return (
+        <main className="flex flex-col items-center w-full h-full bg-gray-50">
+            <Header/>
+
+            {/* УБРИР стиль - синий заголовок с логотипом */}
+            <div className="w-full bg-ubrir-red py-6 mb-8">
+                <div className="container mx-auto px-4">
+                    <div className="flex items-center">
+                        <h1 className="text-3xl font-bold text-[var(--ubrir-red)]">
+                            Финансовая свобода: выход на пенсию в 35 лет
+                        </h1>
+                    </div>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-4 max-w-4xl">
+                {/* Введение */}
+                <section className="bg-white rounded-lg shadow-md p-6 mb-8 border-l-4 border-ubrir-red">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
+                        Финансовая независимость — это реально
+                    </h2>
+                    <p className="text-gray-700 mb-4">
+                        Движение FIRE (Financial Independence, Retire Early) набирает популярность среди клиентов УБРИР.
+                        Наши эксперты подготовили детальный план, как достичь финансовой свободы к 35 годам.
+                    </p>
+                    <div className="bg-ubrir-light-red p-4 rounded">
+                        <p className="font-medium">
+                             <span className="text-ubrir-red">Экспертное мнение:</span> При грамотном инвестировании
+                            и финансовой дисциплине выход на пенсию в 35 лет возможен при доходе от 100 000 ₽/мес.
+                        </p>
+                    </div>
+                </section>
+
+                {/* Теория */}
+                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
+                        Основы финансовой независимости
+                    </h2>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {/* Карточка 1 */}
+                        <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h3 className="text-xl font-medium text-ubrir-red mb-2">
+                                <span className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">1</span>
+                                Сила сложных процентов
+                            </h3>
+                            <p className="text-gray-700 mb-3">
+                                Инвестируя 50 000 ₽ ежемесячно под 10% годовых, через 15 лет вы получите:
                             </p>
-                            <p><strong>Личный бюджет</strong> — это доходы и расходы одного человека.</p>
-                            <p><strong>Семейный бюджет</strong> — совокупность доходов и расходов всех членов семьи, которые ведут совместное хозяйство.</p>
-                            <p><strong>🔍 Важно:</strong> Не обязательно быть специалистом по экономике. Главное — понимать, откуда приходят деньги и куда они уходят.</p>
-
-                            <p><strong>🔹 Из чего состоит бюджет</strong></p>
-                            <div className="budget-components">
-                                    <div>
-                                            <h4>Доходы:</h4>
-                                            <ul>
-                                                    <li>Основные (зарплата, пенсия, стипендия)</li>
-                                                    <li>Дополнительные (подработки, доходы от аренды, кэшбэк, проценты по вкладам)</li>
-                                            </ul>
-                                    </div>
-                                    <div>
-                                            <h4>Расходы:</h4>
-                                            <ul>
-                                                    <li>Обязательные (коммунальные услуги, проезд, еда, кредиты)</li>
-                                                    <li>Переменные (одежда, развлечения, спонтанные покупки)</li>
-                                            </ul>
-                                    </div>
-                                    <div>
-                                            <h4>Накопления и инвестиции:</h4>
-                                            <ul>Отложенные средства — очень важная часть!</ul>
-                                    </div>
-                                    <div>
-                                            <h4>Резерв:</h4>
-                                            <ul>Непредвиденные траты</ul>
-                                    </div>
+                            <div className="bg-ubrir-light-red p-3 rounded text-center font-bold text-ubrir-red">
+                                ≈ 20 000 000 ₽
                             </div>
+                        </div>
 
-                            <p>
-                                    🎯 Цель бюджета — не просто записывать цифры, а контролировать денежные потоки и достигать финансовых целей.
+                        {/* Карточка 2 */}
+                        <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h3 className="text-xl font-medium text-ubrir-red mb-2">
+                                <span className="bg-ubrir-red text-white rounded-full w-6 h-6 inline-flex items-center justify-center mr-2">2</span>
+                                Правило 4%
+                            </h3>
+                            <p className="text-gray-700 mb-3">
+                                Снимая 4% от капитала ежегодно, вы не исчерпаете средства за 30+ лет.
                             </p>
+                            <div className="bg-ubrir-light-red p-3 rounded text-center font-bold text-ubrir-red">
+                                25 000 000 ₽ → 100 000 ₽/мес
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                            <p><strong>🔹 Виды бюджета: плюсы и минусы</strong></p>
-                            <table className="budget-table">
-                                    <thead>
-                                    <tr>
-                                            <th>Вид бюджета</th>
-                                            <th>Пример</th>
-                                            <th>Что это значит</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                            <td>Отрицательный</td>
-                                            <td>Доход 50 000 ₽, расходы 60 000 ₽</td>
-                                            <td>Живёте в долг. Нужен срочный пересмотр!</td>
-                                    </tr>
-                                    <tr>
-                                            <td>Нейтральный</td>
-                                            <td>Доход 50 000 ₽, расходы 50 000 ₽</td>
-                                            <td>Вроде всё хорошо, но нет подушки безопасности</td>
-                                    </tr>
-                                    <tr>
-                                            <td>Положительный</td>
-                                            <td>Доход 50 000 ₽, расходы 40 000 ₽</td>
-                                            <td>Отлично! Есть деньги на сбережения</td>
-                                    </tr>
-                                    </tbody>
-                            </table>
+                {/* Практика */}
+                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
+                        План действий от УБРИР
+                    </h2>
 
-                            <p><strong>🔹 Как начать вести бюджет</strong></p>
-                            <ol className="steps">
-                                    <li>Записывайте все доходы и расходы. Удобнее — в приложении или таблице.</li>
-                                    <li>Фиксируйте даже мелкие траты (кофе, проезд).</li>
-                                    <li>Разбейте расходы по категориям (Питание, транспорт, ЖКУ, развлечения, здоровье, инвестиции и др.).</li>
-                                    <li>Проанализируйте, какие категории «съедают» большую часть бюджета и где можно сэкономить без потери качества жизни.</li>
-                                    <li>Определите финансовую цель: купить технику, накопить на отпуск, создать резерв в 3-6 месячных расходов.</li>
-                                    <li>Выберите метод планирования бюджета:
-                                            <ul>
-                                                    <li>50/30/20: 50% — обязательные расходы, 30% — желания, 20% — сбережения.</li>
-                                                    <li>Конверты: каждому виду расходов соответствует свой лимит.</li>
-                                                    <li>Цифровые корзины: виртуальные кошельки в приложениях.</li>
-                                            </ul>
-                                    </li>
-                            </ol>
-
-                            <p><strong>🔹 Бюджет в семье: совместный или раздельный?</strong></p>
-                            <p>3 подхода к семейному бюджету:</p>
-                            <ul>
-                                    <li><strong>Совместный</strong> — все доходы складываются в одну «копилку» и тратятся на общие нужды.</li>
-                                    <li><strong>Раздельный</strong> — каждый сам оплачивает свою часть расходов.</li>
-                                    <li><strong>Смешанный</strong> — фиксированные общие траты (например, жильё, еда) — совместно, остальное — по своему усмотрению.</li>
-                            </ul>
-                            <p>👪 <strong>Важно:</strong> нужно договориться, кому и сколько удобно вносить в общий бюджет, чтобы избежать конфликтов.</p>
-
-                            <p><strong>🔹 Типичные ошибки при планировании бюджета</strong></p>
-                            <ul className="errors">
-                                    <li>🚫 Нет финансовой цели</li>
-                                    <li>🚫 Не учитываются мелкие расходы</li>
-                                    <li>🚫 Игнорируются непредвиденные ситуации</li>
-                                    <li>🚫 Отсутствуют накопления</li>
-                                    <li>🚫 Расходы не фиксируются регулярно</li>
-                            </ul>
-                            <p>✅ Привычка вести бюджет — как чистить зубы: поначалу непривычно, потом не можешь без неё.</p>
-
-                            <ol className="quiz-questions">
-                                    {questions.map((q, qIndex) => (
-                                        <li key={qIndex}>
-                                                {q.question}
-                                                <ul>
-                                                        {q.options.map((opt, oIndex) => (
-                                                            <li key={oIndex}>
-                                                                    <label>
-                                                                            <input
-                                                                                type="radio"
-                                                                                name={`question-${qIndex}`}
-                                                                                checked={answers[qIndex] === oIndex}
-                                                                                onChange={() => handleChange(qIndex, oIndex)}
-                                                                                disabled={submitted}
-                                                                            />{" "}
-                                                                            {opt}{" "}
-                                                                            {submitted && oIndex === q.correct && (
-                                                                                <strong style={{ color: "green" }}>✅</strong>
-                                                                            )}
-                                                                            {submitted && answers[qIndex] === oIndex && oIndex !== q.correct && (
-                                                                                <strong style={{ color: "red" }}>❌</strong>
-                                                                            )}
-                                                                    </label>
-                                                            </li>
-                                                        ))}
-                                                </ul>
-                                        </li>
-                                    ))}
-                            </ol>
-
-                            {!submitted ? (
-                                <button onClick={handleSubmit}>Проверить</button>
-                            ) : (
-                                <p>
-                                        Ваш результат: <strong>{score} из {questions.length}</strong>{" "}
-                                        ({score >= 5 ? "✅ Пройдено!" : "❌ Попробуйте ещё раз"})
+                    <div className="space-y-4">
+                        <div className="flex items-start">
+                            <div className="bg-ubrir-red text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3 mt-1">
+                                1
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-800">Определите цель</h3>
+                                <p className="text-gray-700">
+                                    Рассчитайте ежемесячные расходы и умножьте на 300 (25 лет × 12 месяцев).
                                 </p>
+                                <div className="mt-2 p-3 bg-gray-100 rounded">
+                                    <p className="font-medium text-ubrir-red">Пример расчета:</p>
+                                    <p>50 000 ₽/мес × 300 = 15 000 000 ₽</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start">
+                            <div className="bg-ubrir-red text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3 mt-1">
+                                2
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-800">Оптимизируйте бюджет</h3>
+                                <p className="text-gray-700">
+                                    Используйте мобильное приложение УБРИР для анализа расходов.
+                                </p>
+                                <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
+                                    <li>Сократите ненужные подписки</li>
+                                    <li>Рефинансируйте кредиты</li>
+                                    <li>Используйте кэшбэк до 10%</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start">
+                            <div className="bg-ubrir-red text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3 mt-1">
+                                3
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-800">Инвестируйте регулярно</h3>
+                                <p className="text-gray-700">
+                                    Открывайте ИИС в УБРИР и получайте налоговый вычет 13%.
+                                </p>
+                                <div className="mt-2 grid grid-cols-2 gap-2">
+                                    <div className="border p-2 rounded text-center">
+                                        <div className="font-medium text-ubrir-red">ETF</div>
+                                        <div className="text-sm">Доходность 8-12%</div>
+                                    </div>
+                                    <div className="border p-2 rounded text-center">
+                                        <div className="font-medium text-ubrir-red">Облигации</div>
+                                        <div className="text-sm">Доходность 6-9%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Калькулятор */}
+                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
+                        Калькулятор финансовой свободы
+                    </h2>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Ежемесячные расходы (₽)</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-ubrir-red focus:border-transparent"
+                                    placeholder="50 000"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Ежемесячные инвестиции (₽)</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-ubrir-red focus:border-transparent"
+                                    placeholder="30 000"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Ожидаемая доходность (% годовых)</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-ubrir-red focus:border-transparent"
+                                    placeholder="10"
+                                />
+                            </div>
+                        </div>
+                        <div className="bg-ubrir-light-red p-4 rounded flex flex-col justify-center">
+                            <h3 className="text-lg font-medium text-ubrir-red mb-2 text-center">
+                                Ваш план достижения FIRE
+                            </h3>
+                            <div className="text-center mb-4">
+                                <div className="text-3xl font-bold text-ubrir-red">12 лет</div>
+                                <div className="text-gray-600">до финансовой свободы</div>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between">
+                                    <span>Необходимый капитал:</span>
+                                    <span className="font-medium">15 000 000 ₽</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Накопите за год:</span>
+                                    <span className="font-medium">420 000 ₽</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>С учетом сложного %:</span>
+                                    <span className="font-medium">≈ 9 800 000 ₽</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button className="w-full mt-4 bg-ubrir-red hover:bg-ubrir-dark-red text-white py-3 px-4 rounded font-medium transition-colors">
+                        Получить персональный план от эксперта УБРИР
+                    </button>
+                </section>
+
+                {/* Тест */}
+                <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
+                        Проверьте свою готовность к FIRE
+                    </h2>
+
+                    <div className="px-8 w-full mb-6">
+                        <ProgressBar steps={questions.length} currentStep={step}/>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-6">
+                        <div className="text-center font-bold text-xl text-gray-800">
+                            {question.question_text}
+                        </div>
+
+                        <div className="flex flex-col gap-3 w-full max-w-md">
+                            {question.variants.map((variant) => (
+                                <label
+                                    key={variant}
+                                    className="flex items-center gap-3 p-3 hover:bg-ubrir-light-red rounded-lg cursor-pointer border border-gray-200 has-[:checked]:border-ubrir-red has-[:checked]:bg-ubrir-light-red transition-colors"
+                                >
+                                    <input
+                                        type="radio"
+                                        name="question"
+                                        value={variant}
+                                        checked={selectedAnswer === variant}
+                                        onChange={() => setSelectedAnswer(variant)}
+                                        className="h-5 w-5 text-ubrir-red focus:ring-ubrir-red"
+                                    />
+                                    <span className="flex-1">{variant}</span>
+                                </label>
+                            ))}
+                        </div>
+
+                        <div className="flex gap-4 items-center mt-4">
+                            {step > 0 && (
+                                <button
+                                    onClick={goToPreviousQuestion}
+                                    className="p-2 text-gray-600 hover:text-ubrir-red rounded-full hover:bg-gray-100"
+                                    aria-label="Назад"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                </button>
                             )}
-                    </article>
+                            <button
+                                className={`px-6 py-3 rounded-lg font-medium ${
+                                    selectedAnswer
+                                        ? "bg-ubrir-red hover:bg-ubrir-dark-red text-white"
+                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                } transition-colors`}
+                                disabled={!selectedAnswer}
+                                onClick={() => selectedAnswer && addQuestionResult(selectedAnswer)}
+                            >
+                                {step + 1 === questions.length ? "Получить результат" : "Следующий вопрос"}
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
-                    <style jsx>{`
-        .page-container {
-          max-width: 900px;
-          margin: 0 auto;
-          padding: 20px;
-          font-family: "Arial", sans-serif;
-          color: #1a1a1a;
-          line-height: 1.6;
-          background: #f9f9f9;
-        }
-        .highlight.red {
-          background-color: #e60000;
-          color: white;
-          padding: 15px 20px;
-          border-radius: 6px;
-          margin-bottom: 20px;
-          text-align: center;
-        }
-        .longread h3 {
-          margin-top: 0;
-          margin-bottom: 1rem;
-          color: #00457c;
-        }
-        .budget-components {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 20px;
-          margin-bottom: 20px;
-        }
-        .budget-components > div {
-          background: white;
-          padding: 15px;
-          border-radius: 8px;
-          box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        }
-        ul, ol {
-          margin-left: 20px;
-          margin-bottom: 1rem;
-        }
-        .budget-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 20px;
-        }
-        .budget-table th, .budget-table td {
-          border: 1px solid #ddd;
-          padding: 8px;
-          text-align: left;
-        }
-        .budget-table th {
-          background-color: #00457c;
-          color: white;
-        }
-        .steps li {
-          margin-bottom: 10px;
-        }
-        .errors {
-          color: #b30000;
-          font-weight: bold;
-        }
-        .quiz-questions > li {
-          margin-bottom: 20px;
-        }
-        .quiz-questions ul {
-          list-style-type: none;
-          padding-left: 0;
-        }
-        .quiz-questions ul li {
-          margin-bottom: 6px;
-          cursor: default;
-        }
-        .quiz-questions ul li strong {
-          color: #007700;
-        }
-        .reels ul {
-          list-style-type: disc;
-          padding-left: 20px;
-        }
-
-        .quiz-questions > li {
-                margin-bottom: 20px;
-        }
-        .quiz-questions ul {
-                list-style: none;
-                padding-left: 0;
-        }
-        button {
-                padding: 10px 20px;
-                background-color: #00457c;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                margin-top: 10px;
-        }
-        button:hover {
-                background-color: #003355;
-        }
-      `}</style>
-            </main>
-        );
+                {/* Контакты */}
+                <section className="bg-ubrir-red rounded-lg shadow-md p-6 text-white">
+                    <h2 className="text-2xl font-semibold mb-4">
+                        Персональное сопровождение от УБРИР
+                    </h2>
+                    <p className="mb-4">
+                        Наши финансовые советники помогут составить индивидуальный план достижения
+                        финансовой свободы с учетом ваших возможностей и целей.
+                    </p>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 className="font-medium mb-2">Контакты</h3>
+                            <p>Телефон: <a href="tel:+78002001234" className="underline">8 800 200-12-34</a></p>
+                            <p>Email: <a href="mailto:fire@ubrir.ru" className="underline">fire@ubrir.ru</a></p>
+                        </div>
+                        <div>
+                            <h3 className="font-medium mb-2">Офисы</h3>
+                            <p>Более 200 отделений по всей России</p>
+                            <button className="mt-2 bg-white text-ubrir-red px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
+                                Найти ближайший офис
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    );
 }
+
+
