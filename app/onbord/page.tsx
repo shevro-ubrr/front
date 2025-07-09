@@ -26,6 +26,15 @@ const questions = [
     }
 ] as IQuestion[];
 
+function generateUsername(length = 10): string {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
 export default function OnboardingPage() {
 
     const [question, setQuestion] = useState<IQuestion>();
@@ -42,9 +51,12 @@ export default function OnboardingPage() {
     }
 
     const onSubmit = () => {
-        fetch("", {
+        fetch("https://guidesai.ru/onboard", {
             method: "POST",
-            headers: {},
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": document.cookie,
+            },
             credentials: "include",
             body: JSON.stringify(questionResult),
         });
@@ -54,6 +66,15 @@ export default function OnboardingPage() {
     useEffect(() => {
         setQuestion(questions[step]);
     }, [step])
+
+    useEffect(() => {
+        if (!document.cookie.includes("username")) {
+            const username = generateUsername(8);
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 7);
+            document.cookie = `username=${username}; path=/; expires=${expires.toUTCString()}; SameSite=None; Secure`;
+        }
+    }, []);
 
     if (!question) {
         return <>Загрузка</>;
