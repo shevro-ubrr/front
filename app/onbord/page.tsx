@@ -3,6 +3,7 @@
 import {useEffect, useState} from "react";
 import {redirect, RedirectType} from 'next/navigation'
 import Header from "@/shared/header";
+import ProgressBar from "@/shared/ProgressBar";
 
 type IQuestion = { question_text: string, variants: string[] };
 
@@ -11,7 +12,22 @@ const questions = [
         question_text: "Как лучше всего описать Ваш текущий статус?",
         variants: ["Школьник (12–17 лет)", "Студент (18–25 лет)", "Родитель", "Педагог/Тьютор"]
     },
-    {question_text: "Мяу2", variants: ["Я башмак", "Я умный"]}
+    {
+        question_text: "Как Вы оцениваете свой уровень знаний в личных финансах?",
+        variants: ["Начальный — знаю базовые термины, но редко применяю", "Средний — умею планировать бюджет и копить", "Продвинутый — инвестирую, оптимизирую налоги, обучаю других"]
+    },
+    {
+        question_text: "Ведёте ли Вы личный или семейный бюджет?",
+        variants: ["Нет", "Иногда (раз-два в год)", "Регулярно (ежемесячно)"]
+    },
+    {
+        question_text: "Знакомо ли Вам понятие «сложный процент»",
+        variants: ["Не слышал(а)", "Слышал(а), но затрудняюсь объяснить", "Могу чётко объяснить и применяю на практике"]
+    },
+    {
+        question_text: "",
+        variants: []
+    },
 ] as IQuestion[];
 
 export default function OnboardingPage() {
@@ -30,7 +46,12 @@ export default function OnboardingPage() {
     }
 
     const onSubmit = () => {
-        //fetch();
+        fetch("", {
+            method: "POST",
+            headers: {},
+            credentials: "include",
+            body: JSON.stringify(questionResult),
+        });
         redirect("/tests", RedirectType.replace);
     }
 
@@ -45,8 +66,11 @@ export default function OnboardingPage() {
     return (
         <main className="flex flex-col items-center  w-full h-full">
             <Header/>
-            <div className="flex flex-col items-center h-full gap-10 justify-center">
-                <div>{question.question_text}</div>
+            <div className="px-8 w-full">
+                <ProgressBar steps={questions.length} currentStep={step}/>
+            </div>
+            <div className="flex flex-col items-center h-full gap-10 justify-center p-8">
+                <div className="text-center font-bold text-xl">{question.question_text}</div>
                 <div className={"flex flex-col gap-2"}>
                     {question.variants.map(variant => (
                         <button className={"task_button"} key={variant}
