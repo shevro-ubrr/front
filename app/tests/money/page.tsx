@@ -65,7 +65,7 @@ export default function BudgetGuide() {
                         👤 Личный бюджет: твои деньги — твои правила
                     </h2>
 
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="flex flex-col gap-6">
                         {/* Доходы */}
                         <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                             <h3 className="text-xl font-medium text-ubrir-red mb-2">
@@ -367,7 +367,7 @@ export default function BudgetGuide() {
                         🎯 Лайфхаки и секреты экономии
                     </h2>
 
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="flex flex-col">
                         <div>
                             <h3 className="text-xl font-medium text-ubrir-red mb-3">
                                 <span
