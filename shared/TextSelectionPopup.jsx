@@ -8,11 +8,7 @@ export default function TextSelectionPopup() {
     const [position, setPosition] = useState({top: 0, left: 0});
     const [selectedText, setSelectedText] = useState('');
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const popupRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        console.log(isChatOpen, showPopup);
-    }, [isChatOpen, showPopup]);
+    const popupRef = useRef(null);
 
     useEffect(() => {
         const handleSelection = () => {
@@ -34,7 +30,7 @@ export default function TextSelectionPopup() {
             }
         };
 
-        const handleClickOutside = (e:  MouseEvent) => {
+        const handleClickOutside = (e) => {
             if (popupRef.current) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-expect-error
@@ -55,7 +51,7 @@ export default function TextSelectionPopup() {
         };
     }, []);
 
-    const handlePopupClick = (e: MouseEvent) => {
+    const handlePopupClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
 
