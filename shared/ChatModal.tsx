@@ -8,14 +8,14 @@ type IProps = {
     initialMessage: string;
 }
 
-export default function ChatModal({ isOpen, onClose, initialMessage }:IProps) {
-    const [messages, setMessages] = useState<{text: string, sender: string}[]>([]);
+export default function ChatModal({isOpen, onClose, initialMessage}: IProps) {
+    const [messages, setMessages] = useState<{ text: string, sender: string }[]>([]);
     const [input, setInput] = useState('');
 
     // Инициализируем чат с выделенным текстом
     useEffect(() => {
         if (isOpen && initialMessage) {
-            setMessages([{ text: initialMessage, sender: 'user' }]);
+            setMessages([{text: initialMessage, sender: 'user'}]);
             // Здесь можно добавить автоматический запрос к API
             // sendChatRequest(initialMessage);
         }
@@ -23,7 +23,7 @@ export default function ChatModal({ isOpen, onClose, initialMessage }:IProps) {
 
     const handleSend = () => {
         if (input.trim()) {
-            const newMessage = { text: input, sender: 'user' };
+            const newMessage = {text: input, sender: 'user'};
             setMessages([...messages, newMessage]);
             setInput('');
 

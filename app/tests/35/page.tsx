@@ -1,8 +1,11 @@
+'use client'
 import Header from "@/shared/header";
+import TextSelectionPopup from "@/shared/TextSelectionPopup";
 
-export default function Page(){
+export default function Page() {
     return (
         <main>
+            <TextSelectionPopup/>
             <Header/>
             <div className="mark red">
                 <h2>Резюмируем</h2>

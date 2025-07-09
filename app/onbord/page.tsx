@@ -26,14 +26,6 @@ const questions = [
     }
 ] as IQuestion[];
 
-function generateUsername(length = 10): string {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-}
 
 export default function OnboardingPage() {
 
@@ -55,7 +47,6 @@ export default function OnboardingPage() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Cookie": document.cookie,
             },
             credentials: "include",
             body: JSON.stringify(questionResult),
@@ -68,12 +59,10 @@ export default function OnboardingPage() {
     }, [step])
 
     useEffect(() => {
-        if (!document.cookie.includes("username")) {
-            const username = generateUsername(8);
-            const expires = new Date();
-            expires.setDate(expires.getDate() + 7);
-            document.cookie = `username=${username}; path=/; expires=${expires.toUTCString()}; SameSite=None; Secure`;
-        }
+        fetch("https://guidesai.ru/set-cookie", {
+            method: "GET",
+            credentials: "include",
+        });
     }, []);
 
     if (!question) {
