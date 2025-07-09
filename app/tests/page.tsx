@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import Header from "@/shared/header";
 
 type ITest = {
     id: string;
@@ -17,16 +18,6 @@ const tests: ITest[] = [
     {id: "paper", name: "Ценные бумаги", imageSrc: "/logo_test_3.svg"},
 ]
 
-const Header = () => {
-
-    return (
-        <Link className="header__logo" href="/">
-            <img src="https://gidpofinansam.com/assets/upload/logo.svg" alt=""/>
-            <div className="delimiter"></div>
-            <div className="text">Финансовая грамотность</div>
-        </Link>
-    )
-}
 
 export default function TestsPage() {
 
