@@ -1,5 +1,5 @@
 export default function Page(){
     return (
-        <main></main>
+        <main>мяу</main>
     )
 }

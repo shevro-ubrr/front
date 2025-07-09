@@ -21,7 +21,7 @@ body {
 }
 
 
-.task_button{
+.task_button {
     background: var(--main-red);
     color: var(--color-white);
     font-weight: bold;
@@ -30,7 +30,7 @@ body {
     border: var(--accent-red) solid 2px;
 }
 
-.testCard{
+.testCard {
     background: #e2a298;
     font-weight: bold;
     padding: 16px;
@@ -42,9 +42,11 @@ body {
 
     width: 300px;
     height: 160px;
+
+    justify-content: space-between;
 }
 
-.testCardContainer{
+.testCardContainer {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -56,4 +58,74 @@ body {
 
     padding: 15px;
 
+}
+
+.header__logo {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400;
+    box-sizing: border-box;
+    color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+
+    padding: 15px;
+}
+
+.header__logo img {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: #007bff;
+    cursor: pointer;
+    box-sizing: border-box;
+    vertical-align: middle;
+    border-style: none;
+    height: auto;
+    width: 7.5rem;
+}
+
+.header__logo .delimiter {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: #007bff;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: .0625rem;
+    height: 2.1875rem;
+    margin: 0 2.1875rem;
+    background-color: #262626;
+    display: block;
+}
+
+
+.header__logo .text {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-align: left;
+    letter-spacing: 0;
+    font-weight: 400;
+    cursor: pointer;
+    box-sizing: border-box;
+    font-size: 1rem;
+    line-height: 1;
+    color: #262626;
+    display: block;
 }
