@@ -31,6 +31,29 @@ body {
 }
 
 .testCard{
-    background: var(--);
+    background: #e2a298;
+    font-weight: bold;
+    padding: 16px;
+    border-radius: 16px;
+    border: var(--accent-red) solid 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    width: 300px;
+    height: 160px;
+}
+
+.testCardContainer{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+
+    justify-content: center;
+
+    padding: 15px;
 
 }
