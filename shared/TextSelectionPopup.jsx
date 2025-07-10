@@ -25,8 +25,6 @@ export default function TextSelectionPopup() {
                 });
 
                 setShowPopup(true);
-            } else {
-                setShowPopup(false);
             }
         };
 
