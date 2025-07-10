@@ -52,7 +52,7 @@ export default function SecuritiesGuide() {
     return (
         <div className="min-h-screen bg-gray-50">
             <Head>
-                <title>Ценные бумаги - твой путь к финансовой свободе! | УБРИР</title>
+                <title>Ценные бумаги - твой путь к финансовой свободе! | УБРиР</title>
                 <meta name="description" content="Полное руководство по инвестированию в ценные бумаги для начинающих"/>
             </Head>
 

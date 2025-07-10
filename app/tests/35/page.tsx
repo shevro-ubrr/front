@@ -105,7 +105,7 @@ export default function EarlyRetirementGuide() {
             <Header/>
             <TextSelectionPopup />
 
-            {/* УБРИР стиль - синий заголовок с логотипом */}
+            {/* УБРиР стиль - синий заголовок с логотипом */}
             <div className="w-full bg-ubrir-red py-6 mb-8">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center">
@@ -123,7 +123,7 @@ export default function EarlyRetirementGuide() {
                         Финансовая независимость — это реально
                     </h2>
                     <p className="text-gray-700 mb-4">
-                        Движение FIRE (Financial Independence, Retire Early) набирает популярность среди клиентов УБРИР.
+                        Движение FIRE (Financial Independence, Retire Early) набирает популярность среди клиентов УБРиР.
                         Наши эксперты подготовили детальный план, как достичь финансовой свободы к 35 годам.
                     </p>
                     <div className="bg-ubrir-light-red p-4 rounded">
@@ -174,7 +174,7 @@ export default function EarlyRetirementGuide() {
                 {/* Практика */}
                 <section className="bg-white rounded-lg shadow-md p-6 mb-8">
                     <h2 className="text-2xl font-semibold text-ubrir-red mb-4">
-                        План действий от УБРИР
+                        План действий от УБРиР
                     </h2>
 
                     <div className="space-y-4">
@@ -201,7 +201,7 @@ export default function EarlyRetirementGuide() {
                             <div>
                                 <h3 className="text-lg font-medium text-gray-800">Оптимизируйте бюджет</h3>
                                 <p className="text-gray-700">
-                                    Используйте мобильное приложение УБРИР для анализа расходов.
+                                    Используйте мобильное приложение УБРиР для анализа расходов.
                                 </p>
                                 <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
                                     <li>Сократите ненужные подписки</li>
@@ -218,7 +218,7 @@ export default function EarlyRetirementGuide() {
                             <div>
                                 <h3 className="text-lg font-medium text-gray-800">Инвестируйте регулярно</h3>
                                 <p className="text-gray-700">
-                                    Открывайте ИИС в УБРИР и получайте налоговый вычет 13%.
+                                    Открывайте ИИС в УБРиР и получайте налоговый вычет 13%.
                                 </p>
                                 <div className="mt-2 grid grid-cols-2 gap-2">
                                     <div className="border p-2 rounded text-center">
@@ -293,7 +293,7 @@ export default function EarlyRetirementGuide() {
                         </div>
                     </div>
                     <button className="w-full mt-4 bg-ubrir-red hover:bg-ubrir-dark-red text-white py-3 px-4 rounded font-medium transition-colors">
-                        Получить персональный план от эксперта УБРИР
+                        Получить персональный план от эксперта УБРиР
                     </button>
                 </section>
 
@@ -367,7 +367,7 @@ export default function EarlyRetirementGuide() {
                 {/* Контакты */}
                 <section className="bg-ubrir-red rounded-lg shadow-md p-6 text-white">
                     <h2 className="text-2xl font-semibold mb-4">
-                        Персональное сопровождение от УБРИР
+                        Персональное сопровождение от УБРиР
                     </h2>
                     <p className="mb-4">
                         Наши финансовые советники помогут составить индивидуальный план достижения
