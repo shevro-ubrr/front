@@ -24,31 +24,36 @@ export default function TextSelectionPopup() {
                     left: rect.left + window.scrollX + rect.width / 2
                 });
 
+                // Показываем попап немедленно
                 setShowPopup(true);
             }
         };
 
         const handleClickOutside = (e) => {
-            const target = e instanceof TouchEvent ? e.touches[0]?.target : e.target;
-            if (popupRef.current && target) {
-                if (!popupRef.current.contains(target)) {
-                    setShowPopup(false);
-                } else {
-                    handlePopupClick(e);
-                }
+            // Для TouchEvent используем changedTouches вместо touches
+            const target = e instanceof TouchEvent
+                ? e.changedTouches[0]?.target
+                : e.target;
+
+            if (popupRef.current && target && !popupRef.current.contains(target)) {
+                setShowPopup(false);
             }
         };
 
-        document.addEventListener('mouseup', handleSelection);
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('touchend', handleSelection);
-        document.addEventListener('touchstart', handleClickOutside);
+        // Добавляем задержку для обработки событий на мобильных устройствах
+        const mobileSelectionHandler = () => {
+            setTimeout(handleSelection, 100);
+        };
 
+        document.addEventListener('mouseup', handleSelection);
+        document.addEventListener('touchend', mobileSelectionHandler); // Используем обертку
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
 
         return () => {
             document.removeEventListener('mouseup', handleSelection);
+            document.removeEventListener('touchend', mobileSelectionHandler);
             document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('touchend', handleSelection);
             document.removeEventListener('touchstart', handleClickOutside);
         };
     }, []);
