@@ -15,20 +15,36 @@ export default function ChatModal({isOpen, onClose, initialMessage}: IProps) {
     // Инициализируем чат с выделенным текстом
     useEffect(() => {
         if (isOpen && initialMessage) {
-            setMessages([{text: initialMessage, sender: 'user'}]);
-            // Здесь можно добавить автоматический запрос к API
-            // sendChatRequest(initialMessage);
+            setMessages([{text: initialMessage, sender: 'text'}]);
         }
     }, [isOpen, initialMessage]);
 
     const handleSend = () => {
         if (input.trim()) {
             const newMessage = {text: input, sender: 'user'};
-            setMessages([...messages, newMessage]);
+            setMessages(m=>[...m, newMessage]);
             setInput('');
 
-            // Здесь можно добавить запрос к API чата
-            // sendChatRequest(input);
+            fetch("https://guidesai.ru/ask_chat", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    selected_text: initialMessage,
+                    user_message: newMessage.text,
+                }),
+            }).then(async (res) => {
+                if (!res.ok) return;
+
+                const json = await res.json();
+                const ans = json.answer;
+
+                setMessages(m=>[...m, {text: ans, sender: 'bot'}]);
+
+            })
         }
     };
 

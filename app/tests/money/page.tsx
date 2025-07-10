@@ -1,6 +1,7 @@
 'use client'
 
 import Header from "@/shared/header";
+import TextSelectionPopup from "@/shared/TextSelectionPopup";
 
 
 export default function BudgetGuide() {
@@ -8,6 +9,7 @@ export default function BudgetGuide() {
     return (
         <main className="flex flex-col items-center w-full h-full bg-gray-50">
             <Header/>
+            <TextSelectionPopup />
 
             {/* Красный заголовок с логотипом */}
             <div className="w-full bg-[var(--main-red)] py-6 mb-8">

@@ -2,6 +2,7 @@
 import {useState, useEffect} from 'react';
 import Head from 'next/head';
 import Header from "@/shared/header";
+import TextSelectionPopup from "../../../shared/TextSelectionPopup";
 
 export default function SecuritiesGuide() {
     const [currentSection, setCurrentSection] = useState(0);
@@ -56,6 +57,7 @@ export default function SecuritiesGuide() {
             </Head>
 
             <Header/>
+            <TextSelectionPopup />
 
             {/* Навигация с прогресс-баром */}
             <nav className="bg-white sticky top-0 z-50 shadow-md py-4">

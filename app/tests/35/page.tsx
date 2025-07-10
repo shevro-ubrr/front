@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { redirect, RedirectType } from "next/navigation";
 import Header from "@/shared/header";
 import ProgressBar from "@/shared/ProgressBar";
+import TextSelectionPopup from "@/shared/TextSelectionPopup";
 
 type IQuestion = { question_text: string; variants: string[] };
 
@@ -102,6 +103,7 @@ export default function EarlyRetirementGuide() {
     return (
         <main className="flex flex-col items-center w-full h-full bg-gray-50">
             <Header/>
+            <TextSelectionPopup />
 
             {/* УБРИР стиль - синий заголовок с логотипом */}
             <div className="w-full bg-ubrir-red py-6 mb-8">
