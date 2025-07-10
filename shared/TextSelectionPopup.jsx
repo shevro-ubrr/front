@@ -24,36 +24,33 @@ export default function TextSelectionPopup() {
                     left: rect.left + window.scrollX + rect.width / 2
                 });
 
-                // Показываем попап немедленно
                 setShowPopup(true);
-            }
-        };
-
-        const handleClickOutside = (e) => {
-            // Для TouchEvent используем changedTouches вместо touches
-            const target = e instanceof TouchEvent
-                ? e.changedTouches[0]?.target
-                : e.target;
-
-            if (popupRef.current && target && !popupRef.current.contains(target)) {
+            } else {
                 setShowPopup(false);
             }
         };
 
-        // Добавляем задержку для обработки событий на мобильных устройствах
-        const mobileSelectionHandler = () => {
-            setTimeout(handleSelection, 100);
+        const handleClickOutside = (e) => {
+            const target = e instanceof TouchEvent ? e.touches[0]?.target : e.target;
+            if (popupRef.current && target) {
+                if (!popupRef.current.contains(target)) {
+                    setShowPopup(false);
+                } else {
+                    handlePopupClick(e);
+                }
+            }
         };
 
         document.addEventListener('mouseup', handleSelection);
-        document.addEventListener('touchend', mobileSelectionHandler); // Используем обертку
         document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchend', handleSelection);
         document.addEventListener('touchstart', handleClickOutside);
+
 
         return () => {
             document.removeEventListener('mouseup', handleSelection);
-            document.removeEventListener('touchend', mobileSelectionHandler);
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchend', handleSelection);
             document.removeEventListener('touchstart', handleClickOutside);
         };
     }, []);
@@ -73,7 +70,7 @@ export default function TextSelectionPopup() {
             {showPopup && (
                 <div
                     ref={popupRef}
-                    className="fixed bg-blue-500 text-white px-3 py-1 rounded-md shadow-lg cursor-pointer transform -translate-x-1/2 z-50"
+                    className="absolute bg-blue-500 text-white px-3 py-1 rounded-md shadow-lg cursor-pointer transform -translate-x-1/2 z-50"
                     style={{top: `${position.top}px`, left: `${position.left}px`}}
                     onClick={handlePopupClick}
                 >
